@@ -18,6 +18,7 @@ import { BarChartComponent } from './components/bar-chart/bar-chart.component';
 import { SliderComponent } from './components/slider/slider.component';
 import { Error404Component } from './components/errors/404.component';
 import { CheckIfRegisteredOnWelcome } from './services/checkifregistered';
+
 @NgModule({
   declarations: [
     AppComponent,

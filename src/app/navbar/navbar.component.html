@@ -2,6 +2,7 @@
     <div fxShow="true" fxHide.lt-md="true">
         <a mat-button [routerLink]="['chart-js-sample-line']">Line chart</a>
         <a mat-button [routerLink]="['chart-js-sample-bar']">Bar chart</a>
+        <a mat-button [routerLink]="['stocks']">Stocks</a>
     </div>
     <div fxShow="true" fxHide.gt-sm="true">
         <mat-icon aria-label="Side nav toggle icon" (click)="sidenav.toggle()">menu</mat-icon>
@@ -15,6 +16,7 @@
             <a (click)="sidenav.toggle()" mat-button>Close</a>
             <a mat-button [routerLink]="['chart-js-sample-line']">Line chart</a>
             <a mat-button [routerLink]="['chart-js-sample-bar']">Bar chart</a>
+            <a mat-button [routerLink]="['stocks']">Stocks</a>
         </div>
     </mat-sidenav>
     <mat-sidenav-content>

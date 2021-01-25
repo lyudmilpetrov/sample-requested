@@ -1,49 +1,57 @@
-import { AfterViewInit, Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChange, SimpleChanges, ViewChild } from '@angular/core';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Observable, Subscription } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit, OnDestroy, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { ChartInfo, IDataSample1, IJSONReports, JSONFile, LineChart, SliderInfo, Stock } from '../shared/data.models';
+import { ApiStocksServices, GeneralChartServices, ObservableAsService } from '../services/register.service';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import * as Chart from 'chart.js';
-import { LineChart, ChartInfo, SliderInfo } from '../../shared/data.models';
-import { ObservableAsService } from '../../services/register.service';
 @Component({
-  selector: 'app-dashboards-line-chart',
-  templateUrl: './line-chart.component.html',
-  styleUrls: ['./line-chart.component.css']
+  templateUrl: 'stocks-sample.html',
+  styleUrls: ['stocks-sample.css']
 })
-export class LineChartComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
-  @Input() PassedInfo: ChartInfo;
+export class StocksSampleComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('linechart') linechartCanvas: ElementRef<HTMLCanvasElement>;
   public context: CanvasRenderingContext2D;
   public chart: Chart;
-  public heightDiv = 0;
-  public widthDiv = 0;
+  Exchanges = new FormControl('', [Validators.required]);
+  exchange = '';
+  Symbol = new FormControl('', [Validators.required]);
+  StockForm = new FormGroup({
+    Exchanges: this.Exchanges,
+    Symbols: this.Symbol
+  });
+  AllStocks: Stock[] = [];
+  AllUniqueExchanges: string[] = [];
+  AllSymbols: string[] = [];
+  showdata = false;
   Line_Chart_Data: LineChart = {};
-  Line_Chart_Data_Subscription: Subscription;
   colorLetters = 'hsla(360, 100%, 100%, 0.89)';
-  Slider_Data_1: SliderInfo = {};
-  Slider_Data_1_Subscription: Subscription;
-  constructor(private OAS: ObservableAsService) { }
-  ngOnInit() { }
-  ngOnDestroy() {
-    if (this.Line_Chart_Data_Subscription) {
-      this.Line_Chart_Data_Subscription.unsubscribe();
-    }
+  constructor(
+    private gcs: GeneralChartServices,
+    private OAS: ObservableAsService,
+    private api: ApiStocksServices) {
+    this.api.getAllActiveStocks().subscribe(x => {
+      this.AllStocks = x;
+      this.AllUniqueExchanges = [...new Set(this.AllStocks.map(s => s.exchange))];
+      this.showdata = true;
+    })
   }
-  ngAfterViewInit(): void {
-    this.Slider_Data_1_Subscription = this.OAS.ObservableSlider_Bar_1.subscribe(x => {
-      if (Object.keys(x).length !== 0) {
-        this.Slider_Data_1 = x;
-      }
-    });
-    const VisualLineSub = 'Observable' + this.PassedInfo.observable;
-    this.Line_Chart_Data_Subscription = this.OAS[VisualLineSub].subscribe((x: LineChart) => {
-      // console.log(x);
-      // console.log(this.PassedInfo);
-      if (Object.keys(x).length !== 0) {
-        this.Line_Chart_Data = x;
+  ngOnInit() {
+    this.StockForm.get('Exchanges').valueChanges.subscribe(value => {
+      // console.log(value);
+      this.exchange = value;
+      this.AllSymbols = [...new Set(this.AllStocks.map(s => {
+        if (s.exchange === value) {
+          if (s.symbol.trim().length >= 3) {
+            return s.symbol.trim();
+          }
+        }
+      }))];
+    })
+    this.StockForm.get('Symbols').valueChanges.subscribe(value => {
+      this.api.getDailyDataStocks(value).subscribe(x => {
+        this.Line_Chart_Data = this.OAS.convertToLineChartFromStockData(x[value], 'Daily info high and low prices for Exchange ' + this.exchange + ' for stock ' + value, ['h', 'l']);
         const options = {
-          type: this.PassedInfo.type.toLowerCase(),
+          type: 'line',
           data: {
             labels: this.Line_Chart_Data.labels,
             datasets: this.Line_Chart_Data.datasets,
@@ -98,7 +106,7 @@ export class LineChartComponent implements OnInit, AfterViewInit, OnChanges, OnD
         Chart.plugins.register({
           beforeDraw: (ChartInstance) => {
             const ctx = ChartInstance.chart.ctx;
-            ctx.fillStyle = this.PassedInfo.style;
+            ctx.fillStyle = 'hsla(0, 0%, 29%, 0.84)';
             ctx.fillRect(0, 0, ChartInstance.chart.width, ChartInstance.chart.height);
           }
         });
@@ -119,14 +127,13 @@ export class LineChartComponent implements OnInit, AfterViewInit, OnChanges, OnD
         this.chart.options.legend.fontColor = this.colorLetters;
         this.chart.options.legend.fontStyle = 'normal';
         if (typeof this.chart !== 'undefined') { this.chart.update(); }
-        // console.log(this.chart);
-      } else {
-        if (typeof this.chart !== 'undefined') {
-          this.chart.clear();
-          this.chart.destroy();
-        }
-      }
-    });
+      });
+    })
   }
-  ngOnChanges(changes: SimpleChanges) { }
+  ngAfterViewInit() {
+
+  }
+  ngOnDestroy() {
+
+  }
 }

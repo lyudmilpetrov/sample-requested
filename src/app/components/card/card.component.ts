@@ -23,7 +23,7 @@ export class CardComponent implements OnInit, OnChanges, AfterViewInit {
     if (typeof (this.data) !== 'undefined') {
       if (this.data.length > 0) {
         this.data2 = JSON.parse(this.data);
-        // console.log(this.data2);
+        // // console.log(this.data2);
       }
     }
   }
@@ -50,7 +50,7 @@ export class CardComponent implements OnInit, OnChanges, AfterViewInit {
   ngAfterViewInit() { }
   exportAsExcelFile(json: any[], excelFileName: string, sheetName: string): void {
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(json);
-    // console.log(worksheet);
+    // // console.log(worksheet);
     // tslint:disable-next-line: one-variable-per-declaration
     const workbook: XLSX.WorkBook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });

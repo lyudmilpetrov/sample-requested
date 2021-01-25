@@ -107,9 +107,9 @@ export class ChartJSLineComponent implements OnInit, OnDestroy, AfterViewInit {
         'TIMESTR', 'COUNT', 'GraphLineVisible1_t1', x.value,
         x.latestyear, x.latestmonth, x.returnedyear, x.returnedmonth).subscribe(
           res => {
-            // // // // console.log(JSON.stringify(res));
+            // // // // // console.log(JSON.stringify(res));
             this.data = JSON.stringify(res);
-            // // // console.log(this.data);
+            // // // // console.log(this.data);
             this.showdata = true;
           }
         );

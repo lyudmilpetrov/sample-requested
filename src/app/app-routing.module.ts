@@ -9,6 +9,7 @@ const routes: Routes = [
   { path: 'chart-js-sample-line', component: ChartJSLineComponent },
   { path: 'chart-js-sample-bar', component: ChartJSBarComponent },
   { path: '404', component: Error404Component },
+  { path: 'stocks', loadChildren: () => import('./stocks/stocks-sample.model').then(m => m.StocksSampleModule) },
   { path: '', redirectTo: 'welcome', pathMatch: 'full' }
 ];
 

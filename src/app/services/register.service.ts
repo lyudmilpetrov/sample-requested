@@ -2,9 +2,8 @@ import { throwError as observableThrowError, Observable, from, BehaviorSubject, 
 import { Injectable, Optional, SkipSelf } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
-import { IUser, JSONFile } from '../shared/data.models';
 import { map, filter, scan, catchError, mergeMap, debounceTime, distinctUntilChanged, switchMap, retry } from 'rxjs/operators';
-import { BarChart, DataBarChart, DataLineChart, HSLAObject, IDataSample1, IJSONReports, LineChart, RadarChart, SliderInfo } from '../shared/data.models';
+import { BarChart, DataBarChart, DataLineChart, HSLAObject, IDataSample1, IJSONReports, LineChart, RadarChart, SliderInfo, StockData, IUser } from '../shared/data.models';
 
 @Injectable({ providedIn: 'root' })
 export class RegisterUser {
@@ -118,10 +117,10 @@ export class ObservableAsService {
   changeVisibleObservable(...args: [d: LineChart | BarChart | SliderInfo, k: string]) {
     this[args[1]] = args[0];
     this[args[1] + '_Init'].next(this[args[1]]);
-    // // // // // // // console.log(this.GraphBarVisible1_t1);
+    // // // // // // // // console.log(this.GraphBarVisible1_t1);
     this.GraphBarVisible1_t1_Init.next(this.GraphBarVisible1_t1);
-    // // // // // // // // console.log(this[args[1]]);
-    // // // // // // // // console.log(this[args[1] + '_Init']);
+    // // // // // // // // // console.log(this[args[1]]);
+    // // // // // // // // // console.log(this[args[1] + '_Init']);
   }
   readJSONToText(
     fileURL: string, charttitle: string, charttype: string,
@@ -130,8 +129,8 @@ export class ObservableAsService {
     observablename: string, limit: number,
     latestyear: number, latestmonth: number,
     returnedyear: number, returnedmonth: number): Observable<any> {
-    // // // // // // // // console.log(observablename);
-    // // // // // // // // // console.log(fileURL);
+    // // // // // // // // // console.log(observablename);
+    // // // // // // // // // // console.log(fileURL);
     return new Observable(observer => {
       this.gs.fileExists(fileURL).subscribe(x => {
         if (x) {
@@ -152,7 +151,7 @@ export class ObservableAsService {
             const bO: BarChart = this.convertToBarChart(JSON.parse(JSON.stringify(dd)), charttitle, 'Bar',
               chartid, keyfordatasets, keyforlables, keyforpresenteddata);
             this.changeVisibleObservable(bO, 'GraphBarVisible1_t1');
-            // // console.log(dd);
+            // // // console.log(dd);
             observer.next(dd);
           });
         } else {
@@ -169,7 +168,7 @@ export class ObservableAsService {
   }
   getJSONFromServer(report: IJSONReports) {
     const url = '';
-    // // // // // // // console.log(url);
+    // // // // // // // // console.log(url);
     return this.httpClient.post(url, report).pipe(map((r: string) => {
       return r;
     }
@@ -182,6 +181,8 @@ export class ObservableAsService {
     const dataLine: LineChart = {};
     dataLine.datasets = [];
     const datasetsInfo = [...new Set(data.map(x => x[keyfordatasets]))].filter(x => x !== undefined);
+    // console.log(data);
+    // console.log(datasetsInfo);
     const lables = [...new Set(data.map(x => {
       if (x[keyfordatasets] === datasetsInfo[0]) {
         return x[keyforlables];
@@ -189,9 +190,10 @@ export class ObservableAsService {
     }
     ))].filter(x => x !== undefined);
     dataLine.labels = lables;
-    const baseColorStep = 360 / datasetsInfo.length;
+    // console.log(lables);
     let cI = 0;
     datasetsInfo.map(y => {
+      // console.log(y);
       const datasetsForDataLine: DataLineChart = {};
       const dataN = [];
       data.map(x => {
@@ -212,6 +214,7 @@ export class ObservableAsService {
     });
     dataLine.index = chartid;
     dataLine.title = charttitle;
+    // console.log(dataLine);
     return dataLine;
   }
   convertToBarChart(
@@ -263,5 +266,75 @@ export class ObservableAsService {
     dataBar.title = charttitle;
     dataBar.index = chartid;
     return dataBar;
+  }
+  convertToLineChartFromStockData(
+    data: StockData[], charttitle: string,
+    keyfordatasets: string[]): LineChart {
+    // console.log(data);
+    const dataLine: LineChart = {};
+    dataLine.title = charttitle;
+    dataLine.index = 1;
+    dataLine.datasets = [];
+    const datasetsInfo = keyfordatasets;
+    const lables = [...new Set(data.map(x => {
+      const utcSeconds = x.t;
+      var d = new Date(0);
+      d.setUTCSeconds(utcSeconds);
+      return d.toLocaleDateString(undefined, {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    }
+    ))].filter(x => x !== undefined);
+    dataLine.labels = lables;
+    datasetsInfo.map(y => {
+      // console.log(y);
+      const datasetsForDataLine: DataLineChart = {};
+      const dataN = [];
+      data.map(x => {
+        dataN.push(x[y]);
+      });
+      datasetsForDataLine.data = dataN;
+      datasetsForDataLine.fill = true;
+      if (y === 'h') {
+        datasetsForDataLine.label = 'High';
+        datasetsForDataLine.borderColor = 'hsl(236, 82%, 61%, 1)';
+      } else {
+        datasetsForDataLine.label = 'Low';
+        datasetsForDataLine.borderColor = 'hsl(102, 82%, 61%, 1)';
+      }
+      dataLine.datasets.push(datasetsForDataLine);
+    });
+    return dataLine;
+  }
+}
+@Injectable({ providedIn: 'root' })
+export class ApiStocksServices {
+  keyid = 'PKROQRP68G0Q5W71FBGO';
+  keysec = 'q51VAyoak0ikmw4PWY3tFWNvrMn66BAF8TMk0yZp';
+  currentProjectChosenSubscription: Subscription;
+  constructor(
+    private http: HttpClient) {
+  }
+  getAllActiveStocks(): Observable<any> {
+    const url = 'https://paper-api.alpaca.markets/v2/assets';
+    return this.http.get(url, {
+      headers: { 'APCA-API-KEY-ID': this.keyid, 'APCA-API-SECRET-KEY': this.keysec }
+    }).pipe(map((r) => {
+      // console.log(r);
+      return r;
+    }
+    ), catchError((e: any) => observableThrowError(e)));
+  }
+  getDailyDataStocks(symbol: string): Observable<any> {
+    const url = 'https://data.alpaca.markets/v1/bars/1D?symbols=' + symbol;
+    return this.http.get(url, {
+      headers: { 'APCA-API-KEY-ID': this.keyid, 'APCA-API-SECRET-KEY': this.keysec }
+    }).pipe(map((r) => {
+      // console.log(r);
+      return r;
+    }
+    ), catchError((e: any) => observableThrowError(e)));
   }
 }
