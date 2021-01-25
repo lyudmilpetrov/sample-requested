@@ -1,0 +1,27 @@
+<mat-grid-list cols="2" rowHeight="30vh">
+    <mat-grid-tile [colspan]="2" [rowspan]="3">
+        <form [formGroup]="EnterForm" (ngSubmit)="SaveProfile(EnterForm.value)" class="login-form">
+            <mat-form-field class="login-full-width">
+                <mat-label>First Name</mat-label>
+                <input formControlName="FirstName" matInput placeholder="Enter first name">
+                <button mat-button *ngIf="FirstName" matSuffix mat-icon-button aria-label="Clear" (click)="FirstName.setValue('')">
+                  <mat-icon>close</mat-icon>
+                </button>
+                <mat-error *ngIf="FirstName.hasError('required')">
+                    First name is <strong>required</strong>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="login-full-width">
+                <mat-label>Last Name</mat-label>
+                <input formControlName="LastName" matInput placeholder="Enter first name">
+                <button mat-button *ngIf="LastName" matSuffix mat-icon-button aria-label="Clear" (click)="LastName.setValue('')">
+                <mat-icon>close</mat-icon>
+                </button>
+                <mat-error *ngIf="LastName.hasError('required')">
+                    Last name is <strong>required</strong>
+                </mat-error>
+            </mat-form-field>
+            <button mat-stroked-button>Register</button>
+        </form>
+    </mat-grid-tile>
+</mat-grid-list>

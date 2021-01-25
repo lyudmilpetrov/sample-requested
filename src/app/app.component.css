@@ -1,0 +1,33 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import 'https://fonts.googleapis.com/icon?family=Material+Icons';
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.grid-container {
+    margin: 20px;
+}
+
+.full-width-dialog .mat-dialog-container {
+    max-width: 80vw !important;
+}
+
+.mat-progress-spinner {
+    display: inline-block;
+    vertical-align: middle;
+    position: absolute;
+    text-align: center;
+    top: 30%;
+    left: 40%;
+}

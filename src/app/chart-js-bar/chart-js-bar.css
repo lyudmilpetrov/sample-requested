@@ -1,0 +1,21 @@
+canvas {
+    border: 1px dotted rosybrown;
+}
+
+.chart-container {
+    position: relative;
+    margin: auto;
+    max-height: 80%;
+    min-height: 80%;
+    max-width: 80%;
+    min-width: 80%;
+}
+
+.mat-progress-spinner {
+    display: inline-block;
+    vertical-align: middle;
+    position: absolute;
+    text-align: center;
+    top: 30%;
+    left: 40%;
+}

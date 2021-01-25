@@ -1,27 +1,26 @@
-# SampleRequested
+## Installation
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.1.0.
+Run `npm install`
 
-## Development server
+## Development server starting up
 
-Run `ng s -o` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Run `ng s -o` for a dev server and your default browser will open new window at `http://localhost:4200/`
 
-## Code scaffolding
+## Building production code base
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Run `ng build --prod` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+## App explanation
 
-## Running unit tests
+The demo app is utilizing Angular 11 and Angular Material for styling.
+The demo app has three pages: landing / welcome page and two additional pages, demoing Chart.js graphs as line and bar charts.
+  ### `welcome` page
+  Landing page requires user to enter first and last name. Once user enters first and last name page utilizes RegisterUser service, which uses rxjs to serve current user to other components.
+  ### `chart-js-line` and `chart-js-bar`
+  Both of the pages demoing the same information consumed from static source './assets/json/cases.json' which suppose to mimic API call to a backend server
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+The application content for the pages above is projected within `NAVBAR` component
 
-## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
 
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).

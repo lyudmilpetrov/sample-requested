@@ -1,0 +1,21 @@
+<div *ngIf="!mobileHide">
+    <div class="chart-container">
+        <h2 style=" text-align: center; margin-top: 1%;">Visualization sample, please use the slider to check prior time periods, covering last 12 months as of the end of the month</h2>
+        <div style="margin-left: 5%; margin-right: 5%;">
+            <app-dashboards-slider [id]="forSlider_1"></app-dashboards-slider>
+        </div>
+        <mat-grid-list [cols]="2" rowHeight="75vh">
+            <mat-grid-tile [colspan]="2" [rowspan]="1">
+                <app-dashboards-card title="{{titleForCard0}}" data="{{data}}">
+                    <div added-element>
+                        <mat-spinner [strokeWidth]="2" [diameter]="192" mode="indeterminate" *ngIf="!showdata"></mat-spinner>
+                        <app-dashboards-line-chart [PassedInfo]="d1CI" *ngIf="showdata"></app-dashboards-line-chart>
+                    </div>
+                </app-dashboards-card>
+            </mat-grid-tile>
+        </mat-grid-list>
+    </div>
+</div>
+<div *ngIf="mobileHide" style="text-align: center;">
+    <h1>mobile device graphs are not suitable as of now</h1>
+</div>
